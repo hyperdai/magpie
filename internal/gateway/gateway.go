@@ -2443,6 +2443,17 @@ func (s *Server) serve(w http.ResponseWriter, r *http.Request, from provider.Pro
 	}
 	maskDone = true
 	logBody(body)
+	// 会话选择先进入既有固定账号路径，额度和访问限制仍按原规则检查。
+	var sessionAccountErr error
+	if !isGroup {
+		r, sessionAccountErr = withSessionAccount(r, who.agent, p)
+	}
+	if sessionAccountErr != nil {
+		call.Status, call.Error = http.StatusServiceUnavailable, "cannot read session account settings"
+		writeError(w, from, call.Status, call.Error)
+		turnedAway()
+		return
+	}
 	// a routing group held to some accounts holds the request to them
 	// from here on, as a gateway key's accounts do
 	if isGroup {

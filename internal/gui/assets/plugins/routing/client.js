@@ -60,6 +60,35 @@ function routingPage(part) {
   const what = el("div", "rt-what");
   const mode = el("p", "rt-mode");
   top.append(what, mode);
+  // 账号选择属于真实会话；不跟随仅用于展示的父会话或模型名。
+  const sessionAccount = el("button", "text rt-session-account", t("Choose session account"));
+  sessionAccount.type = "button";
+  sessionAccount.hidden = true;
+  sessionAccount.title = t("Applies to this session's next request; an answer already streaming keeps its account.");
+  sessionAccount.onclick = async () => {
+    const r = cur;
+    if (!r || day || r.agent !== "codex" || r.provider !== "codex" || !r.session || r.group) return;
+    sessionAccount.disabled = true;
+    try {
+      const response = await fetch("/api/gateway/session-account?id=" + encodeURIComponent(r.id));
+      if (!response.ok) throw new Error(await response.text());
+      const choice = await response.json();
+      if (!cur || day || cur.session !== r.session || cur.agent !== r.agent) return;
+      const options = [{ v: "", name: t("Automatic routing"), literalName: true, note: "" },
+        ...choice.accounts.map((user) => ({ v: user, name: userShown("codex", user), literalName: true, note: "" }))];
+      openProtoMenu(sessionAccount, options, choice.account, async (account) => {
+        if (!cur || day || cur.session !== r.session || cur.agent !== r.agent) return;
+        try {
+          const saved = await fetch("/api/gateway/session-account", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: r.id, account }) });
+          if (!saved.ok) throw new Error(await saved.text());
+          toast(t("Account choice saved"));
+        } catch (error) { toast(error.message); }
+      }, "Choose session account");
+    } catch (error) { toast(error.message); }
+    finally { sessionAccount.disabled = false; }
+  };
+  top.append(sessionAccount);
+
   const stage = el("div", "rt-stage");
   const wires = document.createElementNS(NS, "svg");
   wires.setAttribute("class", "rt-wires");
@@ -2625,6 +2654,8 @@ function routingPage(part) {
   // what a row says now: resting, answering, or what routing weighed it by
   function render() {
     if (!cur) return;
+    sessionAccount.hidden = !!day || cur.agent !== "codex" || cur.provider !== "codex" || !cur.session || !!cur.group;
+    setText(sessionAccount, t("Choose session account"));
     hubText();
     const n = now(), rs = staged();
     const trying = new Map(), busy = new Set(); // a seat → the request it answers now

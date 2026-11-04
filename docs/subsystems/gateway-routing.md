@@ -22,6 +22,46 @@ message digest is not migrated to a newly recognised native id, so the first
 request after upgrading can choose an account anew. Historical usage is not
 backfilled; see [Gateway Session Aggregation](gateway-sessions.md).
 
+## A Codex session's selected account
+
+On Routing, select a recent Codex subscription request and open **Choose session
+account**. A selected account applies to the next request of that exact
+client session, across its Codex subscription models. It does not change
+Codex's sign-in, restart the client, move an answer already streaming, or
+change another session. **Automatic routing** removes the selection and
+resumes the configured routing and affinity policy.
+
+The management API (`GET`/`POST /api/gateway/session-account`) derives the
+session from a recent gateway route; it does not accept an inferred parent
+session or an arbitrary session supplied by the page. A separate web process
+reads the serving gateway's trace in the same way as Routing already does.
+Only enabled Codex accounts are offered. Groups and other providers keep
+routing normally, and subagents with their own session IDs do not inherit
+this choice. See [`session_account.go`](../../internal/gui/session_account.go).
+
+[`session_account.go`](../../internal/gateway/session_account.go) keeps the
+choices in `session-accounts.json` beside providers.json (0600). The key is
+a digest of the agent and actual session ID; the value is the account's user
+name, never a credential. Changes use an interprocess lock and atomic write,
+so the serving gateway reads a console's choice on its next request and a
+restart keeps it. At most 512 choices are retained; clear an existing
+selection before adding another at that limit. An unreadable or invalid file
+fails closed rather than silently routing to another account or being
+replaced with an empty file.
+
+The chosen account enters the existing `X-Magpie-Account` path before quota
+and access planning; an explicit request header takes precedence. A cap,
+rest, disabled account, model restriction or gateway-key account restriction
+still refuses the request. No other account answers in its place. The header
+stays local and the routing trace records the pin. Account changes can lose
+upstream cache reuse and do not make another account accept sealed state it
+cannot read. Verification: `TestSessionAccountChangesNextRequest`,
+`TestSessionAccountKeepsCapsAndDoesNotFallback`,
+`TestSessionAccountInvalidFileDoesNotBecomeAutomatic`,
+`TestSessionAccountDoesNotChangeOtherProvidersOrAnonymousCalls`,
+`TestSessionAccountDoesNotRewriteRequestAlreadyRouted`, and
+`TestSessionAccountManagementRoundTrip`.
+
 ## Responsibilities and sources of truth
 
 | Part | Responsibility | Source |

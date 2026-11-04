@@ -2,6 +2,11 @@
 // kernel adds them to i18n.js's (magpie.strings).
 magpie.strings({
   zh: {
+    "Choose session account": "会话账号",
+    "Automatic routing": "自动路由",
+    "Account choice saved": "会话账号已保存",
+    "Applies to this session's next request; an answer already streaming keeps its account.": "从此会话的下一次请求生效；正在输出的回答继续使用原账号。",
+
     "sign-in refused (answered since)": "登录曾被拒（之后已应答）",
     "Free first uses it before paid ones, and Cheapest first counts it as costing nothing": "免费优先会先用它再用付费的，最便宜优先把它算作不花钱",
     "{name}, {n} accounts: {windows}": "{name}（{n} 个账号）：{windows}",
@@ -662,6 +667,11 @@ magpie.strings({
     "This group may spend every account of {provider}": "这个组可以消耗 {provider} 的每个账号",
   },
   "zh-TW": {
+    "Choose session account": "工作階段帳號",
+    "Automatic routing": "自動路由",
+    "Account choice saved": "工作階段帳號已儲存",
+    "Applies to this session's next request; an answer already streaming keeps its account.": "從此工作階段的下一次請求生效；正在串流的回答繼續使用原帳號。",
+
     "sign-in refused (answered since)": "登入曾被拒（之後已應答）",
     "Free first uses it before paid ones, and Cheapest first counts it as costing nothing": "免費優先會先用它再用付費的，最便宜優先把它算作不花錢",
     "{name}, {n} accounts: {windows}": "{name}（{n} 個帳號）：{windows}",
@@ -1322,6 +1332,11 @@ magpie.strings({
     "This group may spend every account of {provider}": "這個組可以消耗 {provider} 的每個帳號",
   },
   ja: {
+    "Choose session account": "セッションのアカウント",
+    "Automatic routing": "自動ルーティング",
+    "Account choice saved": "セッションのアカウントを保存しました",
+    "Applies to this session's next request; an answer already streaming keeps its account.": "このセッションの次のリクエストから適用されます。応答中のアカウントは変わりません。",
+
     "sign-in refused (answered since)": "サインイン拒否（その後は応答あり）",
     "Free first uses it before paid ones, and Cheapest first counts it as costing nothing": "無料優先は有料より先にこれを使い、最安優先はこれを費用ゼロとして数えます",
     "{name}, {n} accounts: {windows}": "{name}（{n} アカウント）：{windows}",
@@ -1982,6 +1997,11 @@ magpie.strings({
     "This group may spend every account of {provider}": "このグループは {provider} のすべてのアカウントを使えます",
   },
   de: {
+    "Choose session account": "Sitzungskonto",
+    "Automatic routing": "Automatisches Routing",
+    "Account choice saved": "Sitzungskonto gespeichert",
+    "Applies to this session's next request; an answer already streaming keeps its account.": "Gilt ab der nächsten Anfrage dieser Sitzung. Eine laufende Antwort behält ihr Konto.",
+
     "sign-in refused (answered since)": "Anmeldung abgelehnt (seitdem beantwortet)",
     "Free first uses it before paid ones, and Cheapest first counts it as costing nothing": "„Kostenlos zuerst“ nutzt es vor bezahlten, „Günstigste zuerst“ zählt es als kostenlos",
     "{name}, {n} accounts: {windows}": "{name}, {n} Konten: {windows}",
