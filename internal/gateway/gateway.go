@@ -2321,6 +2321,11 @@ func (s *Server) handle(from provider.Protocol) http.HandlerFunc {
 			writeError(w, from, 400, err.Error())
 			return
 		}
+		if from == provider.Responses {
+			if to := codexSuggestionsFor(r, body); to != "" && to != model {
+				body, model = withModel(body, to), to
+			}
+		}
 		noteAsked(r.Context(), model)
 		// Qoder 1.1.82 and later name no session: the one of its own
 		// session files the request holds the prompts of (qoder_session.go)

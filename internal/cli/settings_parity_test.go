@@ -82,8 +82,7 @@ func balanced(src string) int {
 	return len(src)
 }
 
-// Every key the pages send POST /api/settings is one `magpie settings`
-// sets, and every one it sets is one the pages send.
+// 网页保存的键必须支持 CLI；仅由 CLI 配置的键需显式列明并说明原因。
 func TestSettingsCLISetsWhatTheWindowSaves(t *testing.T) {
 	gui := guiSettingsKeys(t)
 	// spread into a save's body, not keys of it
@@ -120,10 +119,19 @@ func TestSettingsCLISetsWhatTheWindowSaves(t *testing.T) {
 		}
 	}
 	for _, k := range settingsapi.Keys {
-		if _, own := ownRoute[k]; !own && !slices.Contains(gui, k) {
+		if _, own := ownRoute[k]; !own && !slices.Contains(gui, k) && cliOnlySettings[k] == "" {
 			t.Errorf("`magpie settings` sets %q, which no page sends", k)
 		}
 	}
+	for key, reason := range cliOnlySettings {
+		if !settingsapi.Known(key) || strings.TrimSpace(reason) == "" {
+			t.Errorf("invalid CLI-only setting %q: %q", key, reason)
+		}
+	}
+}
+
+var cliOnlySettings = map[string]string{
+	"codexSuggestions": "Prompt suggestion routing is configured through the CLI; GUI saves preserve it without adding a picker.",
 }
 
 // ownRoute are the settings `magpie settings` sets that a page saves

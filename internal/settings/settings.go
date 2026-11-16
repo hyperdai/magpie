@@ -871,6 +871,8 @@ type Settings struct {
 	// sends it, "off" answered by magpie with no prediction and sent
 	// nowhere, or a model's id (provider/model, group/<id>) that writes it.
 	CodexPredictions string `json:"codexPredictions,omitempty"`
+	// CodexSuggestions 指定主动建议及其安全检查的模型或路由组；空值保留原请求。
+	CodexSuggestions string `json:"codexSuggestions,omitempty"`
 	// CodexAutoReview is the model Codex's auto-review (approvals_reviewer
 	// = "auto_review": the guardian that decides an approval in the user's
 	// place) runs on (#938): a model's id (provider/model, group/<id>) put
@@ -2737,6 +2739,10 @@ func saveOwn(s Settings, recording, reads bool) error {
 	s.CodexPredictions = strings.TrimSpace(s.CodexPredictions)
 	if s.CodexPredictions != "" && s.CodexPredictions != "off" && !strings.Contains(s.CodexPredictions, "/") {
 		return fmt.Errorf("the model for Codex's composer predictions must be a model's id such as openai/gpt-5-mini, or off, not %q", s.CodexPredictions)
+	}
+	s.CodexSuggestions = strings.TrimSpace(s.CodexSuggestions)
+	if s.CodexSuggestions != "" && !strings.Contains(s.CodexSuggestions, "/") {
+		return fmt.Errorf("the model for Codex's prompt suggestions must be a model's id such as openai/gpt-5-mini, not %q", s.CodexSuggestions)
 	}
 	s.CodexAutoReview = strings.TrimSpace(s.CodexAutoReview)
 	if s.CodexAutoReview != "" && s.CodexAutoReview != CodexAutoReviewSession && !strings.Contains(s.CodexAutoReview, "/") {

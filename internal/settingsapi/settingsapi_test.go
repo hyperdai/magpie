@@ -39,6 +39,8 @@ func sample(t reflect.Type, key string, was reflect.Value) reflect.Value {
 			s = "off" // a model is checked against the catalog
 		case "videoGen":
 			s = "studio/clip-1" // a video model, videoModel's
+		case "codexSuggestions":
+			s = "fixture/model"
 		}
 		for _, c := range Choices[key] {
 			if c != was.String() {

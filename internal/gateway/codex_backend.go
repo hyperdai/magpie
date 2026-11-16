@@ -119,6 +119,11 @@ func (s *Server) codexBackend(w http.ResponseWriter, r *http.Request) {
 		// the route that shows it while it is held before routing names
 		// it, as handle's and gemini's do (Jason on Discord: a held Codex
 		// turn showed as no model, "magpie · 0 on")
+		if rest == "/responses" {
+			if to := codexSuggestionsFor(r, body); to != "" && to != model {
+				body, model = withModel(body, to), to
+			}
+		}
 		noteAsked(r.Context(), model)
 		// the service tier set for Codex, in place of the one it asked
 		body = codexTiered(r, body, model)

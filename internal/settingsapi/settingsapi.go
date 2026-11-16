@@ -46,7 +46,7 @@ var Keys = []string{
 	"workbuddyCheckin", "traeCheckin", "minimaxCheckin", "qoderCheckin", "checkinAt",
 	// models: replies, vision, images, search
 	"replyModel", "noLoopGuard", "claudeLeanPrompt", "claudeNoExtraUsage", "claudePrintMode", "refusalRetries", "retryAfterCap",
-	"vision", "visionEffort", "imageGen", "videoGen", "imageTimeout", "classifyTimeout",
+	"vision", "visionEffort", "imageGen", "videoGen", "imageTimeout", "classifyTimeout", "codexSuggestions",
 	// what every routing group does that says nothing of its own
 	"groupSink", "groupFirstToken", "groupPatience",
 	"searcher", "searcherThen", "searcherEffort", "searchFirst",
@@ -378,6 +378,9 @@ func Merge(body []byte, cur settings.Settings, web bool) (settings.Settings, err
 	// and the Get started card put away, from the card itself
 	in.GuideHidden = cur.GuideHidden
 
+	if _, sent := fields["codexSuggestions"]; !sent {
+		in.CodexSuggestions = cur.CodexSuggestions
+	}
 	in.CodexTitles = cur.CodexTitles             // set on its own (codex-titles)
 	in.CodexDescriptions = cur.CodexDescriptions // set on its own (codex-descriptions)
 	in.CodexPredictions = cur.CodexPredictions   // and codex-predictions

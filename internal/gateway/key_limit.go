@@ -2,6 +2,7 @@ package gateway
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"io"
 	"net/http"
@@ -78,6 +79,15 @@ func keyLimited(next http.Handler) http.Handler {
 			if err != nil {
 				writeError(w, protoOfPath(r.URL.Path), status, err.Error())
 				return
+			}
+			// 先固定实际模型，再预留预算，避免后续配置变化造成两者不一致。
+			switch r.URL.Path {
+			case "/responses", "/v1/responses", CodexPath + "/responses":
+				selected := codexSuggestionsTo(r.Header, b)
+				r = r.WithContext(context.WithValue(r.Context(), codexSuggestionsKey{}, selected))
+				if selected != "" {
+					b = withModel(b, selected)
+				}
 			}
 			r.Body, r.ContentLength = io.NopCloser(bytes.NewReader(b)), int64(len(b))
 			size, model = int64(len(b)), budget.ModelOf(b)
